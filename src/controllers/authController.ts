@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { signupSchema, signinSchema } from '../validations/authValidation';
 import user from '../models/user';
 import { Request, Response } from 'express';
+import { AuthenticatedRequest } from '../middleware/authMiddleware';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -57,7 +58,9 @@ export async function signin(req: Request, res: Response): Promise<void> {
     if (!existingUser || !existingUser.password) {
       res
         .status(404)
-        .json({ message: 'User not found with the email or password is missing' });
+        .json({
+          message: 'User not found with the email or password is missing',
+        });
       return;
     }
 
@@ -81,8 +84,20 @@ export async function signin(req: Request, res: Response): Promise<void> {
       token,
     });
   } catch (error) {
-    console.log("Error in signin controller");
-    res.status(500).json("Internal server error!");
+    console.log('Error in signin controller');
+    res.status(500).json('Internal server error!');
     return;
+  }
+}
+
+export async function checkAuth(req: AuthenticatedRequest, res: Response) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated!' });
+    }
+    res.status(200).json({ user: req.user });
+  } catch (error) {
+    console.error('Error in checkAuth:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }

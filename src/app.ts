@@ -1,5 +1,5 @@
 import express from 'express';
-import router from "./routes/pageRoutes";
+import router from './routes/pageRoutes';
 import { connectDB } from './config/db';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -9,8 +9,8 @@ const app = express();
 app.use(express.json());
 connectDB();
 
-app.use("/api/v1",router);
+app.use('/api/v1', router);
 
 app.listen(process.env.PORT, () => {
-  console.log('Server is running');
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
