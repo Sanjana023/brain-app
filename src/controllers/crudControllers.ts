@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
 import { contentModel } from '../models/content';
 import { TagModel } from '../models/tagModel';
-import {v2 as cloudinary} from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 
 async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
   const tagIds: string[] = [];
@@ -111,16 +111,18 @@ export const getContent = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const deleteContent=async(req:AuthenticatedRequest , res:Response)=>{
-  
+export const deleteContent = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   const contentId = req.params.id;
   const user = req.user;
 
   const content = await contentModel.findById(contentId);
   try {
-    if(!content){
-    return res.status(404).json({message:"No content found"});
-  }
+    if (!content) {
+      return res.status(404).json({ message: 'No content found' });
+    }
 
     // If it's a PDF, delete from Cloudinary
     if (content.contentType === 'pdf' && content.link) {
@@ -134,11 +136,29 @@ export const deleteContent=async(req:AuthenticatedRequest , res:Response)=>{
       await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
     }
 
-    await contentModel.deleteOne({_id:contentId});
-    return res.status(200).json({message:"Content deleted successfully!"});
+    await contentModel.deleteOne({ _id: contentId });
+    return res.status(200).json({ message: 'Content deleted successfully!' });
   } catch (error) {
-    console.log("Error in deleteContent controller",error);
-    return res.status(500).json({message:"Internal server error"});
+    console.log('Error in deleteContent controller', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
+};
 
-}
+export const shareContent = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const user = req.user;
+
+    const contents = await contentModel
+      .find({ userId: user._id })
+     if (!contents || contents.length === 0) {
+      return res.status(404).json({ message: 'No content found for this user' });
+    }
+    res.status(200).json({ contents });
+  } catch (error) {
+    console.log('Error in shareContent controller', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
