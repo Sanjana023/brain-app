@@ -5,7 +5,7 @@ const contentSchema = new mongoose.Schema({
 
   contentType: { type: String, enum: ['pdf', 'link'], required: true },
 
-  title: { type: String, required: true },
+  title: { type: String, required: true , trim:true},
 
   tags:  [{type:mongoose.Types.ObjectId , ref:'Tag'}],
 
