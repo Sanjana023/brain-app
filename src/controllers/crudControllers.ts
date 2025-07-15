@@ -19,14 +19,15 @@ async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
   return tagIds;
 }
 
-
 export const addContent = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { title, contentType } = req.body;
     let tags = req.body.tags;
 
     if (!title || !contentType) {
-      return res.status(400).json({ message: 'Title and contentType are required' });
+      return res
+        .status(400)
+        .json({ message: 'Title and contentType are required' });
     }
 
     if (!['pdf', 'link'].includes(contentType)) {
@@ -52,11 +53,13 @@ export const addContent = async (req: AuthenticatedRequest, res: Response) => {
     } else if (contentType === 'link') {
       link = req.body.link;
       if (!link) {
-        return res.status(400).json({ message: 'Link is required when contentType is "link"' });
+        return res
+          .status(400)
+          .json({ message: 'Link is required when contentType is "link"' });
       }
     }
 
-   // Parse and normalize tags
+    // Parse and normalize tags
     if (typeof tags === 'string') {
       try {
         tags = JSON.parse(tags);
@@ -71,12 +74,11 @@ export const addContent = async (req: AuthenticatedRequest, res: Response) => {
 
     const tagIds = await getOrCreateTags(tags);
 
-
     const newContent = new contentModel({
       userId: user._id,
       title,
       contentType,
-      tags:tagIds,
+      tags: tagIds,
       link,
       fileName: contentType === 'pdf' ? fileName : undefined,
       fileSize: contentType === 'pdf' ? fileSize : undefined,
@@ -84,9 +86,26 @@ export const addContent = async (req: AuthenticatedRequest, res: Response) => {
 
     await newContent.save();
 
-    return res.status(200).json({ message: 'Content added successfully', content: newContent });
+    return res
+      .status(200)
+      .json({ message: 'Content added successfully', content: newContent });
   } catch (error) {
     console.error('Error in addContent:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getContent = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const user = req.user;
+
+    const contents = await contentModel
+      .find({ userId: user._id })
+      .populate('tags');
+
+    return res.status(200).json({ contents });
+  } catch (error) {
+    console.log('Error in getContent handler', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
