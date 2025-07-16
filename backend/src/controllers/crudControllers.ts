@@ -4,6 +4,8 @@ import { contentModel } from '../models/content';
 import { TagModel } from '../models/tagModel';
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
+import { LinkModel } from '../models/linkModel';
+import { random } from '../utils';
 dotenv.config();
 
 async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
@@ -152,12 +154,39 @@ export const shareContent = async (
   res: Response
 ) => {
   try {
-    const userId = req.user._id;
+    const share = req.body.share;
+    const userId = req.user?._id;
 
-    const link = `http://localhost:${process.env.PORT}/api/v1/brain/shared/${userId}`;
-    res.status(200).json({ link });
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (share) {
+      const hash = random(10);
+
+      // Delete existing share link if any (to regenerate new one)
+      await LinkModel.findOneAndDelete({ userId });
+
+      const newLink = await LinkModel.create({
+        userId,
+        hash,
+      });
+
+      const link = `http://localhost:${process.env.PORT}/api/v1/brain/shared/${newLink.hash}`;
+
+      return res.status(200).json({
+        message: 'Shared link created',
+        link,
+      });
+    } else {
+      //if user wants to delete the shared link
+      await LinkModel.deleteOne({ userId });
+      return res.status(200).json({
+        message: 'Shared link removed',
+      });
+    }
   } catch (error) {
-    console.log('Error in shareContent controller', error);
+    console.error('Error in shareContent controller:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -168,17 +197,21 @@ export const getSharedContent = async (
   res: Response
 ) => {
   try {
-    const userId = req.params.shareLink.trim();
-
-    const userContent = await contentModel.find({ userId }).populate('tags');
-
-    if (!userContent || userContent.length === 0) {
-      return res
-        .status(404)
-        .json({ message: 'No user content found for this user' });
+    const hash = req.params.shareLink;
+    console.log('hash:' + hash);
+    const link = await LinkModel.findOne({ hash });
+    if (!link) {
+      return res.status(404).json({ message: 'Incorrect link' });
     }
 
-    return res.status(200).json({ userContent });
+    const content = await contentModel
+      .find({ userId: link.userId })
+      .populate('tags');
+
+    if (!content || content.length == 0) {
+      return res.status(404).json({ message: 'No content found!' });
+    }
+    return res.status(200).json({ content });
   } catch (error) {
     console.error('Error in getSharedContent controller:', error);
     return res.status(500).json({ message: 'Internal server error!' });
