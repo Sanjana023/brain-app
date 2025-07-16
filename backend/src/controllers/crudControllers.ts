@@ -171,8 +171,9 @@ export const shareContent = async (
         userId,
         hash,
       });
-
-      const link = `http://localhost:${process.env.PORT}/api/v1/brain/shared/${newLink.hash}`;
+      
+      const BASE_URL = process.env.BASE_URL;
+      const link = `${BASE_URL}/api/v1/brain/shared/${newLink.hash}`;
 
       return res.status(200).json({
         message: 'Shared link created',
