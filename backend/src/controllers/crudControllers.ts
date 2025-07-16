@@ -3,6 +3,8 @@ import { AuthenticatedRequest } from '../middleware/authMiddleware';
 import { contentModel } from '../models/content';
 import { TagModel } from '../models/tagModel';
 import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
+dotenv.config();
 
 async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
   const tagIds: string[] = [];
@@ -152,7 +154,7 @@ export const shareContent = async (
   try {
     const userId = req.user._id;
 
-    const link = `http://localhost:5000/brain/shared/${userId}`;
+    const link = `http://localhost:${process.env.PORT}/api/v1/brain/shared/${userId}`;
     res.status(200).json({ link });
   } catch (error) {
     console.log('Error in shareContent controller', error);
