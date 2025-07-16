@@ -171,7 +171,7 @@ export const shareContent = async (
         userId,
         hash,
       });
-      
+
       const BASE_URL = process.env.BASE_URL;
       const link = `${BASE_URL}/api/v1/brain/shared/${newLink.hash}`;
 
@@ -199,7 +199,6 @@ export const getSharedContent = async (
 ) => {
   try {
     const hash = req.params.shareLink;
-    console.log('hash:' + hash);
     const link = await LinkModel.findOne({ hash });
     if (!link) {
       return res.status(404).json({ message: 'Incorrect link' });
