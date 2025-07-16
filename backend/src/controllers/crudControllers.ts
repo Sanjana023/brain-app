@@ -144,21 +144,41 @@ export const deleteContent = async (
   }
 };
 
+//creating a shareable link
 export const shareContent = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
   try {
-    const user = req.user;
+    const userId = req.user._id;
 
-    const contents = await contentModel
-      .find({ userId: user._id })
-     if (!contents || contents.length === 0) {
-      return res.status(404).json({ message: 'No content found for this user' });
-    }
-    res.status(200).json({ contents });
+    const link = `http://localhost:5000/brain/shared/${userId}`;
+    res.status(200).json({ link });
   } catch (error) {
     console.log('Error in shareContent controller', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+//Fetch another user's shared brain content
+export const getSharedContent = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.params.shareLink.trim();
+
+    const userContent = await contentModel.find({ userId }).populate('tags');
+
+    if (!userContent || userContent.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'No user content found for this user' });
+    }
+
+    return res.status(200).json({ userContent });
+  } catch (error) {
+    console.error('Error in getSharedContent controller:', error);
+    return res.status(500).json({ message: 'Internal server error!' });
   }
 };
