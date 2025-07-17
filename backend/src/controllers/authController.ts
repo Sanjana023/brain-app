@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { signupSchema, signinSchema } from '../validations/authValidation';
+import { signinSchema } from '../validations/authValidation';
 import user from '../models/user';
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
@@ -10,13 +10,29 @@ dotenv.config();
 
 export async function signup(req: Request, res: Response): Promise<void> {
   try {
-    const parsedResult = signupSchema.safeParse(req.body);
-    if (!parsedResult.success) {
-      res.status(400).json({ errors: z.treeifyError(parsedResult.error) });
+    const { username, email, password } = req.body;
+
+    if (
+      !username ||
+      username.length < 3 ||
+      username.length > 10 ||
+      !/^[a-zA-Z\s]+$/.test(username)
+    ) {
+      res.status(400).json({ message: 'Invalid username' });
       return;
     }
 
-    const { username, email, password } = parsedResult.data;
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      res.status(400).json({ message: 'Invalid email' });
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      res
+        .status(400)
+        .json({ message: 'Password must be at least 6 characters' });
+      return;
+    }
 
     const existingUser = await user.findOne({ email });
     if (existingUser) {
@@ -56,11 +72,9 @@ export async function signin(req: Request, res: Response): Promise<void> {
 
     //if user does not exist with the email (checking password for type error)
     if (!existingUser || !existingUser.password) {
-      res
-        .status(404)
-        .json({
-          message: 'User not found with the email or password is missing',
-        });
+      res.status(404).json({
+        message: 'User not found with the email or password is missing',
+      });
       return;
     }
 
@@ -78,7 +92,7 @@ export async function signin(req: Request, res: Response): Promise<void> {
       process.env.JWT_SECRET as string,
       { expiresIn: '7d' }
     );
-   res.cookie('token', token, {
+    res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days

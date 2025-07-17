@@ -18,27 +18,37 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
+  console.log('Form submitted:', formData); // Debug
 
-    const res = await handleSignup(formData);
+  const res = await handleSignup(formData);
+  console.log('Response from handleSignup:', res); // Debug
 
-    if (res.success) {
-      toast.success('Signup successful!');
-      setTimeout(() => navigate('/signin'), 2000);
+  if (res.success) {
+    toast.success('Signup successful!');
+    setTimeout(() => navigate('/signin'), 2000);
+  } else {
+    if (typeof res.message === 'string') {
+      toast.error(res.message);
     } else {
-      if (typeof res.message === 'string') {
-        toast.error(res.message);
-      } else {
-        // Extract Zod validation messages
+      try {
         const formatted = res.message.format();
         const messages = Object.values(formatted)
           .map((field: any) => field?._errors?.[0])
           .filter(Boolean);
 
-        messages.forEach((msg) => toast.error(msg));
+        if (messages.length > 0) {
+          messages.forEach((msg) => toast.error(msg));
+        } else {
+          toast.error('Invalid input');
+        }
+      } catch (err) {
+        toast.error('Something went wrong.');
       }
     }
-  };
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100 relative overflow-hidden">
