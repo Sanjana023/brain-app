@@ -16,11 +16,15 @@ const HomePage = () => {
   const [contentList, setContentList] = useState<ContentItem[]>([]);
 
   const fetchContent = async () => {
-    const res = await fetch('http://localhost:5000/api/v1/content', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/content`, {
       credentials: 'include',
     });
     const data = await res.json();
-    setContentList(data);
+   if (res.ok && Array.isArray(data.contents)) {
+    setContentList(data.contents); // ✅ extract the contents array
+  } else {
+    setContentList([]); // fallback
+  }
   };
 
   useEffect(() => {

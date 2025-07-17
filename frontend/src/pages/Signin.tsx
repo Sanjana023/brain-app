@@ -13,7 +13,6 @@ const Signin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(import.meta.env.VITE_API_BASE_URL);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/signin`, {
         method: 'POST',

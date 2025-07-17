@@ -1,27 +1,18 @@
-// components/Card.tsx
 import { format } from 'date-fns';
-//import { useNavigate } from 'react-router-dom';
-import { FileText, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Thumbnail from './Thumbnail';
 
 interface CardProps {
   id: string;
   icon?: 'Youtube' | 'Twitter' | 'Notion' | 'PDF';
-  tag:
-    | 'Productivity'
-    | 'Tech & Tools'
-    | 'Mindset'
-    | 'Learning & Skills'
-    | 'Workflows'
-    | 'Inspiration';
+  tag: string;
   title: string;
   link: string;
   reload: () => void;
 }
 
-const Card = ({ icon= 'PDF', tag, title, link, reload, id }: CardProps) => {
-  //const navigate = useNavigate();
+const Card = ({ id, icon = 'PDF', tag, title, link, reload }: CardProps) => {
   const date = format(new Date(), 'dd/MM/yyyy');
 
   const handleDelete = async () => {
@@ -32,34 +23,28 @@ const Card = ({ icon= 'PDF', tag, title, link, reload, id }: CardProps) => {
       });
 
       if (res.ok) {
-       toast.success('Item deleted successfully!');
+        toast.success('Item deleted!');
         reload();
       } else {
-       toast.error('Failed to delete the item');
+        toast.error('Failed to delete item');
       }
     } catch (err) {
-      console.error('Error deleting item:', err);
+      console.error(err);
     }
   };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 w-[19vw] h-[50vh] flex flex-col justify-between">
-      {/* Header */}
+      {/* Title + Delete */}
       <div className="flex justify-between items-start mb-2">
-        <div className="flex items-center gap-2 text-gray-800 font-medium">
-          <FileText size={18} />
-          <h2 className="text-md font-semibold">{title}</h2>
-        </div>
-        <button
-          onClick={handleDelete}
-          className="text-gray-400 hover:text-red-400 transition"
-        >
+        <h2 className="text-md font-semibold text-gray-800 truncate">{title}</h2>
+        <button onClick={handleDelete} className="text-gray-400 hover:text-red-400 transition">
           <Trash2 size={18} />
         </button>
       </div>
 
       {/* Thumbnail */}
-      <Thumbnail icon={icon} link={link} title={title} />
+      <Thumbnail link={link} contentType={icon} />
 
       {/* Tags */}
       <div className="pt-3 flex gap-2 flex-wrap">

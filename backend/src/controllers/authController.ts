@@ -76,6 +76,7 @@ export async function signin(req: Request, res: Response): Promise<void> {
     //if password does not match return response
     if (!isMatch) {
       res.status(401).json({ message: 'Invalid email or password!' });
+      return;
     }
 
     //if password matches, generate token
