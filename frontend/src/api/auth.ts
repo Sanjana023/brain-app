@@ -1,10 +1,18 @@
+import { signupSchema } from '../../../backend/src/validations/authValidation';
+
 export const handleSignup = async (formData: {
   username: string;
   email: string;
   password: string;
 }) => {
+  const result = signupSchema.safeParse(formData);
+
+  if (!result.success) {
+    return { success: false, message: result.error };  
+  }
+
   try {
-    const res = await fetch('http://localhost:5000/api/v1/signup', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -12,15 +20,12 @@ export const handleSignup = async (formData: {
     });
 
     const data = await res.json();
-
-    if (res.ok) {
-      return { success: true, message: data.message };
-    } else {
-      const errorMessage =
-        data.message || data.errors || 'Signup failed. Check your input.';
-      return { success: false, message: errorMessage };
+    if (!res.ok) {
+      return { success: false, message: data.message || 'Signup failed' };
     }
-  } catch (error) {
-    return { success: false, message: 'Server error' };
+
+    return { success: true, message: data.message };
+  } catch (err) {
+    return { success: false, message: 'Network error' };
   }
 };

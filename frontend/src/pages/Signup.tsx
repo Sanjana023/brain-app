@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { handleSignup } from '../api/auth'; // adjust path accordingly
+import { handleSignup } from '../api/auth';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -11,8 +11,6 @@ const Signup = () => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,61 +19,67 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { username, email, password } = formData;
-
-    if (!username || !email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
 
     const res = await handleSignup(formData);
+
     if (res.success) {
-      setSuccessMsg(res.message);
-      toast.success('Signup successfull!');
+      toast.success('Signup successful!');
       setTimeout(() => navigate('/signin'), 2000);
     } else {
-      setError(res.message);
+      if (typeof res.message === 'string') {
+        toast.error(res.message);
+      } else {
+        // Extract Zod validation messages
+        const formatted = res.message.format();
+        const messages = Object.values(formatted)
+          .map((field: any) => field?._errors?.[0])
+          .filter(Boolean);
+
+        messages.forEach((msg) => toast.error(msg));
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100 relative overflow-hidden">
       {/* Background Emojis */}
-      <div className="absolute text-[120px] opacity-10 select-none">🧠📘✨</div>
+      <div className="absolute text-[120px] opacity-10 select-none pointer-events-none">
+        🧠📘✨
+      </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative z-10">
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
-          Sign Up
+      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md z-10 space-y-6">
+        <h2 className="text-3xl font-bold text-center text-indigo-600">
+          Create Your Account
         </h2>
 
-        {error && (
-          <div className="text-red-500 text-sm mb-3 text-center">{error}</div>
-        )}
-        {successMsg && (
-          <div className="text-green-600 text-sm mb-3 text-center">
-            {successMsg}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Username */}
+          <div className="relative">
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Username"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+            <User className="absolute left-3 top-2.5 text-gray-400" size={20} />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Username"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
+          {/* Email */}
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+            <Mail className="absolute left-3 top-2.5 text-gray-400" size={20} />
+          </div>
 
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
-
+          {/* Password */}
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -83,16 +87,18 @@ const Signup = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-10"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
+            <Lock className="absolute left-3 top-2.5 text-gray-400" size={20} />
             <div
-              className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+              className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
               onClick={() => setShowPassword((prev) => !prev)}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </div>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-200"
@@ -101,7 +107,7 @@ const Signup = () => {
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-center">
+        <p className="text-sm text-center text-gray-600">
           Already have an account?{' '}
           <Link to="/signin" className="text-indigo-600 hover:underline">
             Sign in
