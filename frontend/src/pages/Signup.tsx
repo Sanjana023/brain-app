@@ -29,7 +29,7 @@ const Signup = () => {
     setTimeout(() => navigate('/signin'), 2000);
   } else {
     if (typeof res.message === 'string') {
-      toast.error(res.message);
+      console.error(res.message);
     } else {
       try {
         const formatted = res.message.format();
@@ -50,16 +50,11 @@ const Signup = () => {
 };
 
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100 relative overflow-hidden">
-      {/* Background Emojis */}
-      <div className="absolute text-[120px] opacity-10 select-none pointer-events-none">
-        🧠📘✨
-      </div>
-
-      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md z-10 space-y-6">
-        <h2 className="text-3xl font-bold text-center text-indigo-600">
-          Create Your Account
+ return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 px-4">
+      <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.1)] animate-fade-in space-y-6">
+        <h2 className="text-3xl font-bold text-center text-indigo-600 tracking-tight">
+          Create your account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -71,7 +66,7 @@ const Signup = () => {
               value={formData.username}
               onChange={handleChange}
               placeholder="Username"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
             <User className="absolute left-3 top-2.5 text-gray-400" size={20} />
           </div>
@@ -84,7 +79,7 @@ const Signup = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Email"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
             <Mail className="absolute left-3 top-2.5 text-gray-400" size={20} />
           </div>
@@ -97,7 +92,7 @@ const Signup = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
             <Lock className="absolute left-3 top-2.5 text-gray-400" size={20} />
             <div
@@ -111,7 +106,7 @@ const Signup = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-200"
+            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-200 font-medium"
           >
             Create Account
           </button>
@@ -119,7 +114,7 @@ const Signup = () => {
 
         <p className="text-sm text-center text-gray-600">
           Already have an account?{' '}
-          <Link to="/signin" className="text-indigo-600 hover:underline">
+          <Link to="/signin" className="text-indigo-600 hover:underline font-medium">
             Sign in
           </Link>
         </p>
