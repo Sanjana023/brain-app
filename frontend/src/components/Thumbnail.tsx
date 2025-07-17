@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { ImageOff } from 'lucide-react';
 
 interface ThumbnailProps {
-  icon: string;
   link: string;
   title: string;
+  icon: string;
+  contentType: 'Youtube' | 'Twitter' | 'Notion' | 'PDF';
 }
 
 // ✅ Extract YouTube video ID from various URL formats

@@ -44,7 +44,7 @@ const Card = ({ id, icon = 'PDF', tag, title, link, reload }: CardProps) => {
       </div>
 
       {/* Thumbnail */}
-      <Thumbnail link={link} contentType={icon} />
+      <Thumbnail link={link} contentType={icon} icon={''} title={''}/>
 
       {/* Tags */}
       <div className="pt-3 flex gap-2 flex-wrap">
