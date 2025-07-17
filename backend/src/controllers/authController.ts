@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { z } from 'zod';
-import { signinSchema } from '../validations/authValidation';
 import user from '../models/user';
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
@@ -60,13 +58,7 @@ export async function signup(req: Request, res: Response): Promise<void> {
 
 export async function signin(req: Request, res: Response): Promise<void> {
   try {
-    const parsedResult = signinSchema.safeParse(req.body);
-    if (!parsedResult.success) {
-      res.status(400).json({ errors: z.treeifyError(parsedResult.error) });
-      return;
-    }
-
-    const { email, password } = parsedResult.data;
+    const { email, password } = req.body;
 
     const existingUser = await user.findOne({ email });
 
