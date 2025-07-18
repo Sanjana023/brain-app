@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import Card from '../components/Card';
 import SideBar from '../layouts/SideBar';
-import Topbar from '../layouts/Topbar';
+import Topbar from '../layouts/Topbar'; // ✅ import updated Topbar
+import AddContentModal from '../modals/addContentModal';
 
 type ContentItem = {
   _id: string;
@@ -14,6 +15,7 @@ type ContentItem = {
 
 const HomePage = () => {
   const [contentList, setContentList] = useState<ContentItem[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // ✅ define modal state
 
   const fetchContent = async () => {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/content`, {
@@ -21,9 +23,9 @@ const HomePage = () => {
     });
     const data = await res.json();
     if (res.ok && Array.isArray(data.contents)) {
-      setContentList(data.contents);  
+      setContentList(data.contents);
     } else {
-      setContentList([]);  
+      setContentList([]);
     }
   };
 
@@ -31,12 +33,26 @@ const HomePage = () => {
     fetchContent();
   }, []);
 
+  // ✅ Define the function to open modal
+  const handleAddContentClick = () => {
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SideBar />
 
       <div className="flex-1 flex flex-col">
-        <Topbar />
+        {/* ✅ pass the handler to Topbar */}
+        <Topbar onAddContentClick={handleAddContentClick} />
+
+        {/* ✅ Render the modal */}
+        <AddContentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onContentAdded={fetchContent}
+        />
+
         <main className="p-6 space-y-6 flex flex-wrap gap-6">
           {contentList.map((item) => (
             <Card

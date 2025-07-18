@@ -24,6 +24,16 @@ async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
   return tagIds;
 }
 
+// getting all tags for frontend
+export const getAllTags=async(req:AuthenticatedRequest,res:Response)=>{
+  try {
+    const tags = await TagModel.find().sort({title:1});
+    res.status(200).json({ tags });
+  } catch (error) {
+    console.log("Error in getAllTags controller",error);
+    return res.status(500).json({message:"Failed to fetch tags"});
+  }
+}
 export const addContent = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { title, contentType } = req.body;
