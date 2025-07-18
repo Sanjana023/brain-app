@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Card from '../components/Card';
 import SideBar from '../layouts/SideBar';
-import Topbar from '../layouts/Topbar'; // ✅ import updated Topbar
+import Topbar from '../layouts/Topbar';
 import AddContentModal from '../modals/addContentModal';
 
 type ContentItem = {
@@ -15,7 +15,7 @@ type ContentItem = {
 
 const HomePage = () => {
   const [contentList, setContentList] = useState<ContentItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // ✅ define modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchContent = async () => {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/content`, {
@@ -33,27 +33,23 @@ const HomePage = () => {
     fetchContent();
   }, []);
 
-  // ✅ Define the function to open modal
   const handleAddContentClick = () => {
     setIsModalOpen(true);
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-purple-200  to-white-200">
       <SideBar />
-
       <div className="flex-1 flex flex-col">
-        {/* ✅ pass the handler to Topbar */}
         <Topbar onAddContentClick={handleAddContentClick} />
 
-        {/* ✅ Render the modal */}
         <AddContentModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onContentAdded={fetchContent}
         />
         <div className="px-6 py-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-[repeat(auto-fit,_minmax(260px,_1fr))] gap-6">
             {contentList.map((item) => (
               <Card
                 key={item._id}

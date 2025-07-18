@@ -2,7 +2,6 @@ import { format } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Thumbnail from './Thumbnail';
-import { motion } from 'framer-motion';
 
 interface Tag {
   _id: string;
@@ -17,8 +16,11 @@ interface CardProps {
   reload: () => void;
 }
 
-const getContentType = (link: string): 'Youtube' | 'Twitter' | 'Notion' | 'PDF' => {
-  if (link.includes('youtube.com') || link.includes('youtu.be')) return 'Youtube';
+const getContentType = (
+  link: string
+): 'Youtube' | 'Twitter' | 'Notion' | 'PDF' => {
+  if (link.includes('youtube.com') || link.includes('youtu.be'))
+    return 'Youtube';
   if (link.includes('twitter.com')) return 'Twitter';
   if (link.includes('notion.so')) return 'Notion';
   return 'PDF';
@@ -30,10 +32,13 @@ const Card = ({ id, tags, title, link, reload }: CardProps) => {
 
   const handleDelete = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/delete/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/delete/${id}`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+        }
+      );
 
       if (res.ok) {
         toast.success('Item deleted!');
@@ -46,29 +51,27 @@ const Card = ({ id, tags, title, link, reload }: CardProps) => {
     }
   };
 
-return (
-    <motion.div
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97, rotate: -1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-      className="bg-white rounded-2xl shadow-md p-4 w-[240px] h-[340px] flex flex-col justify-between hover:shadow-xl cursor-pointer"
-    >
+  return (
+    <div className="bg-white rounded-xl shadow-md p-4 w-[19vw] h-[50vh] flex flex-col justify-between m-3 transition duration-300 transform hover:scale-[1.02] hover:shadow-lg">
       {/* Header */}
       <div className="flex justify-between items-start mb-2">
-        <h2 className="text-sm font-semibold text-gray-800 truncate max-w-[85%]">{title}</h2>
-        <button onClick={handleDelete} className="text-gray-400 hover:text-red-500 transition">
+        <h2 className="text-md font-semibold text-gray-800 truncate">
+          {title}
+        </h2>
+        <button
+          onClick={handleDelete}
+          className="text-gray-400 hover:text-red-400 transition"
+        >
           <Trash2 size={18} />
         </button>
       </div>
 
       {/* Thumbnail */}
-      <div className="rounded-lg overflow-hidden bg-gray-100 h-[130px] flex items-center justify-center mb-3">
-        <Thumbnail link={link} contentType={contentType} title={title} />
-      </div>
+      <Thumbnail link={link} contentType={contentType} title={title} />
 
       {/* Tags */}
       {Array.isArray(tags) && tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="pt-3 flex gap-2 flex-wrap">
           {tags.map((tag) => (
             <span
               key={tag._id}
@@ -81,10 +84,10 @@ return (
       )}
 
       {/* Footer */}
-      <div className="text-xs text-gray-500 mt-auto">
-        Added on <span className="font-medium text-gray-600">{date}</span>
+      <div className="text-xs text-gray-400 mt-2">
+        Added on <span className="font-medium text-gray-500">{date}</span>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

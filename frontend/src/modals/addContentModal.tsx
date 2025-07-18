@@ -113,7 +113,7 @@ const AddContentModal = ({
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      className="p-6 bg-white rounded-lg w-[30vw] mx-auto mt-[15vh] shadow-md outline-none"
+      className="backdrop-blur-lg bg-white/80 border border-purple-200 p-6 rounded-lg w-[30vw] mx-auto mt-[15vh] shadow-xl"
     >
       <h2 className="text-xl font-bold mb-4">Add Content</h2>
 
@@ -192,12 +192,8 @@ const AddContentModal = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              const input = (e.target as HTMLInputElement).value
-                .trim()
-                .toLowerCase();
-              if (input && !selectedTags.includes(input)) {
-                setSelectedTags((prev) => [...prev, input]);
-              }
+              const input = (e.target as HTMLInputElement).value;
+              handleAddTag(input);
               (e.target as HTMLInputElement).value = '';
             }
           }}
