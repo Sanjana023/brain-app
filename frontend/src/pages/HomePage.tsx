@@ -53,7 +53,7 @@ const HomePage = () => {
           onContentAdded={fetchContent}
         />
 
-        <main className="p-6 space-y-6 flex flex-wrap gap-6">
+        <main className="p-6 flex flex-wrap gap-y-8 gap-x-6 justify-evenly">
           {contentList.map((item) => (
             <Card
               key={item._id}

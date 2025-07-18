@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Thumbnail from './Thumbnail';
+import { motion } from 'framer-motion';
 
 interface Tag {
   _id: string;
@@ -10,7 +11,7 @@ interface Tag {
 
 interface CardProps {
   id: string;
-  tags: Tag[]; // ✅ updated from `tag: string` to `tags: Tag[]`
+  tags: Tag[];
   title: string;
   link: string;
   reload: () => void;
@@ -45,40 +46,48 @@ const Card = ({ id, tags, title, link, reload }: CardProps) => {
     }
   };
 
-  return (
-    <div className="bg-white rounded-xl shadow-md p-4 w-[19vw] h-[50vh] flex flex-col justify-between">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-2">
-        <h2 className="text-md font-semibold text-gray-800 truncate">{title}</h2>
-        <button onClick={handleDelete} className="text-gray-400 hover:text-red-400 transition">
-          <Trash2 size={18} />
-        </button>
-      </div>
-
-      {/* Thumbnail */}
-      <Thumbnail link={link} contentType={contentType} title={title} />
-
-      {/* Tags */}
-      {Array.isArray(tags) && tags.length > 0 && (
-  <div className="pt-3 flex gap-2 flex-wrap">
-    {tags.map((tag) => (
-      <span
-        key={tag._id}
-        className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium"
-      >
-        #{tag.title}
-      </span>
-    ))}
-  </div>
-)}
-
-
-      {/* Footer */}
-      <div className="text-xs text-gray-400 mt-2">
-        Added on <span className="font-medium text-gray-500">{date}</span>
-      </div>
+return (
+  <motion.div
+    whileHover={{ scale: 1.03 }}
+    whileTap={{ scale: 0.97, rotate: -1 }}
+    transition={{ type: 'spring', stiffness: 700, damping: 30 }}
+    className="bg-white rounded-2xl shadow-lg p-4 w-[260px] h-[360px] flex flex-col justify-between hover:shadow-xl transition duration-300 cursor-pointer"
+  >
+    {/* Header */}
+    <div className="flex justify-between items-start mb-3">
+      <h2 className="text-md font-semibold text-gray-800 truncate max-w-[85%]">
+        {title}
+      </h2>
+      <button onClick={handleDelete} className="text-gray-400 hover:text-red-500 transition">
+        <Trash2 size={18} />
+      </button>
     </div>
-  );
-};
+
+    {/* Thumbnail */}
+    <div className="rounded-xl overflow-hidden bg-gray-100 h-[150px] flex items-center justify-center mb-4">
+      <Thumbnail link={link} contentType={contentType} title={title} />
+    </div>
+
+    {/* Tags */}
+    {Array.isArray(tags) && tags.length > 0 && (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {tags.map((tag) => (
+          <span
+            key={tag._id}
+            className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium"
+          >
+            #{tag.title}
+          </span>
+        ))}
+      </div>
+    )}
+
+    {/* Footer */}
+    <div className="text-xs text-gray-500 mt-auto">
+      Added on <span className="font-medium text-gray-600">{date}</span>
+    </div>
+  </motion.div>
+);
+}
 
 export default Card;

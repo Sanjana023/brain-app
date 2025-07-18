@@ -25,20 +25,46 @@ async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
 }
 
 // getting all tags for frontend
-export const getAllTags=async(req:AuthenticatedRequest,res:Response)=>{
+export const getAllTags = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const tags = await TagModel.find().sort({title:1});
+    const tags = await TagModel.find().sort({ title: 1 });
     res.status(200).json({ tags });
   } catch (error) {
-    console.log("Error in getAllTags controller",error);
-    return res.status(500).json({message:"Failed to fetch tags"});
+    console.log('Error in getAllTags controller', error);
+    return res.status(500).json({ message: 'Failed to fetch tags' });
   }
-}
+};
 export const addContent = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { title, contentType } = req.body;
     let tags = req.body.tags;
-
+    if (typeof tags === 'string') {
+      try {
+        const parsed = JSON.parse(tags); // Case: stringified JSON array (from FormData)
+        if (Array.isArray(parsed)) {
+          tags = parsed;
+        } else {
+          // Case: comma-separated string like "tag1, tag2"
+          tags = tags
+            .split(',')
+            .map((t) => t.trim().toLowerCase())
+            .filter(Boolean);
+        }
+      } catch {
+        // Case: raw string like "tag1, tag2"
+        tags = tags
+          .split(',')
+          .map((t: string) => t.trim().toLowerCase())
+          .filter(Boolean);
+      }
+    } else if (Array.isArray(tags)) {
+      // Normalize all values to lowercase strings
+      tags = tags.map((t) => String(t).trim().toLowerCase()).filter(Boolean);
+    } else {
+      return res
+        .status(400)
+        .json({ message: 'Tags must be a string or an array' });
+    }
     if (!title || !contentType) {
       return res
         .status(400)
@@ -100,7 +126,7 @@ export const addContent = async (req: AuthenticatedRequest, res: Response) => {
     });
 
     await newContent.save();
-
+    await newContent.populate('tags');
     return res
       .status(200)
       .json({ message: 'Content added successfully', content: newContent });
