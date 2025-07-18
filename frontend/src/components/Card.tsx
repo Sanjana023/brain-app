@@ -3,25 +3,29 @@ import { Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Thumbnail from './Thumbnail';
 
+interface Tag {
+  _id: string;
+  title: string;
+}
+
 interface CardProps {
   id: string;
-  tag: string;
+  tags: Tag[]; // ✅ updated from `tag: string` to `tags: Tag[]`
   title: string;
   link: string;
   reload: () => void;
 }
 
-// ✅ Automatically detect content type from link
 const getContentType = (link: string): 'Youtube' | 'Twitter' | 'Notion' | 'PDF' => {
   if (link.includes('youtube.com') || link.includes('youtu.be')) return 'Youtube';
   if (link.includes('twitter.com')) return 'Twitter';
   if (link.includes('notion.so')) return 'Notion';
-  return 'PDF'; // default fallback
+  return 'PDF';
 };
 
-const Card = ({ id, tag, title, link, reload }: CardProps) => {
+const Card = ({ id, tags, title, link, reload }: CardProps) => {
   const date = format(new Date(), 'dd/MM/yyyy');
-  const contentType = getContentType(link); // 🔍 detect automatically
+  const contentType = getContentType(link);
 
   const handleDelete = async () => {
     try {
@@ -52,14 +56,22 @@ const Card = ({ id, tag, title, link, reload }: CardProps) => {
       </div>
 
       {/* Thumbnail */}
-      <Thumbnail link={link} contentType={contentType} title={title}/>
+      <Thumbnail link={link} contentType={contentType} title={title} />
 
       {/* Tags */}
-      <div className="pt-3 flex gap-2 flex-wrap">
-        <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium">
-          #{tag}
-        </span>
-      </div>
+      {Array.isArray(tags) && tags.length > 0 && (
+  <div className="pt-3 flex gap-2 flex-wrap">
+    {tags.map((tag) => (
+      <span
+        key={tag._id}
+        className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium"
+      >
+        #{tag.title}
+      </span>
+    ))}
+  </div>
+)}
+
 
       {/* Footer */}
       <div className="text-xs text-gray-400 mt-2">

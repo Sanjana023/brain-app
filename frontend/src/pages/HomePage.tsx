@@ -5,9 +5,9 @@ import Topbar from '../layouts/Topbar';
 
 type ContentItem = {
   _id: string;
-  icon?: "Youtube" | "Twitter" | "Notion" | "PDF";
-  contentType: string;  
-  tag: "Productivity" | "Tech & Tools" | "Mindset" | "Learning & Skills" | "Workflows" | "Inspiration";
+  icon?: 'Youtube' | 'Twitter' | 'Notion' | 'PDF';
+  contentType: string;
+  tags: { _id: string; title: string }[];
   title: string;
   link: string;
 };
@@ -20,11 +20,11 @@ const HomePage = () => {
       credentials: 'include',
     });
     const data = await res.json();
-   if (res.ok && Array.isArray(data.contents)) {
-    setContentList(data.contents); // ✅ extract the contents array
-  } else {
-    setContentList([]); // fallback
-  }
+    if (res.ok && Array.isArray(data.contents)) {
+      setContentList(data.contents);  
+    } else {
+      setContentList([]);  
+    }
   };
 
   useEffect(() => {
@@ -42,11 +42,10 @@ const HomePage = () => {
             <Card
               key={item._id}
               id={item._id}
-              icon={item.contentType === 'pdf' ? 'PDF' : item.icon}
-              tag={item.tag}
+              tags={item.tags}
               title={item.title}
               link={item.link}
-              reload={fetchContent}  
+              reload={fetchContent}
             />
           ))}
         </main>
