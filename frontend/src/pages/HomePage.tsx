@@ -52,19 +52,20 @@ const HomePage = () => {
           onClose={() => setIsModalOpen(false)}
           onContentAdded={fetchContent}
         />
-
-        <main className="p-6 flex flex-wrap gap-y-8 gap-x-6 justify-evenly">
-          {contentList.map((item) => (
-            <Card
-              key={item._id}
-              id={item._id}
-              tags={item.tags}
-              title={item.title}
-              link={item.link}
-              reload={fetchContent}
-            />
-          ))}
-        </main>
+        <div className="px-6 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {contentList.map((item) => (
+              <Card
+                key={item._id}
+                id={item._id}
+                tags={item.tags}
+                title={item.title}
+                link={item.link}
+                reload={fetchContent}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

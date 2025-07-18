@@ -184,7 +184,7 @@ const AddContentModal = ({
       {/* Tags */}
       <div className="mb-3">
         <label className="block mb-1 text-sm font-medium">
-          Tags (type or select)
+          Tags (create or select)
         </label>
         <input
           type="text"
@@ -192,48 +192,55 @@ const AddContentModal = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              const value = (e.target as HTMLInputElement).value;
-              handleAddTag(value);
+              const input = (e.target as HTMLInputElement).value
+                .trim()
+                .toLowerCase();
+              if (input && !selectedTags.includes(input)) {
+                setSelectedTags((prev) => [...prev, input]);
+              }
               (e.target as HTMLInputElement).value = '';
             }
           }}
           className="w-full p-2 border border-gray-300 rounded"
         />
-
-        {/* Suggestions */}
-        <div className="flex gap-2 mt-2 flex-wrap">
-          {tags
-            .filter((tag) => !selectedTags.includes(tag.title))
-            .map((tag) => (
-              <button
-                key={tag._id}
-                onClick={() => handleAddTag(tag.title)}
-                className="px-2 py-1 text-sm rounded bg-gray-100 text-gray-700 border"
-              >
-                + #{tag.title}
-              </button>
-            ))}
-        </div>
-
-        {/* Selected tags */}
-        <div className="mt-2 flex flex-wrap gap-2">
-          {selectedTags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-1 text-sm rounded-full bg-purple-600 text-white flex items-center gap-1"
-            >
-              #{tag}
-              <button
-                onClick={() =>
-                  setSelectedTags((prev) => prev.filter((t) => t !== tag))
+      </div>
+      {/* Suggestions */}
+      <div className="flex gap-2 mt-2 flex-wrap">
+        {tags
+          .filter((tag) => !selectedTags.includes(tag.title))
+          .map((tag) => (
+            <button
+              key={tag._id}
+              onClick={() => {
+                if (!selectedTags.includes(tag.title)) {
+                  setSelectedTags((prev) => [...prev, tag.title]);
                 }
-                className="ml-1 text-white hover:text-gray-200"
-              >
-                ×
-              </button>
-            </span>
+              }}
+              className="px-2 py-1 text-sm rounded bg-gray-100 text-gray-700 border"
+            >
+              + #{tag.title}
+            </button>
           ))}
-        </div>
+      </div>
+
+      {/* Selected tags */}
+      <div className="mt-2 flex flex-wrap gap-2">
+        {selectedTags.map((tag) => (
+          <span
+            key={tag}
+            className="px-2 py-1 text-sm rounded-full bg-purple-600 text-white flex items-center gap-1"
+          >
+            #{tag}
+            <button
+              onClick={() =>
+                setSelectedTags((prev) => prev.filter((t) => t !== tag))
+              }
+              className="ml-1 text-white hover:text-gray-200"
+            >
+              ×
+            </button>
+          </span>
+        ))}
       </div>
 
       {/* Footer */}
