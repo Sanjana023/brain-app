@@ -6,9 +6,10 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (_req, file) => ({
     folder: 'pdfs',
-    resource_type: 'raw',
+    resource_type: 'auto',
     format: 'pdf',
     public_id: file.originalname.split('.')[0],
+    access_mode: 'public',
   }),
 });
 
