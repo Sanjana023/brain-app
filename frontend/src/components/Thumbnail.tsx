@@ -1,46 +1,59 @@
-import { useState } from 'react';
-import { ImageOff } from 'lucide-react';
+import { FileText, Twitter, Book } from 'lucide-react';
 
 interface ThumbnailProps {
   link: string;
   title: string;
-  icon: string;
   contentType: 'Youtube' | 'Twitter' | 'Notion' | 'PDF';
 }
 
-// ✅ Extract YouTube video ID from various URL formats
 function extractYouTubeVideoId(url: string): string | null {
-  const regex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
+  try {
+    const parsedUrl = new URL(url);
+
+    // Case 1: https://www.youtube.com/watch?v=VIDEO_ID
+    if (parsedUrl.hostname.includes("youtube.com")) {
+      return parsedUrl.searchParams.get("v");
+    }
+
+    // Case 2: https://youtu.be/VIDEO_ID
+    if (parsedUrl.hostname === "youtu.be") {
+      return parsedUrl.pathname.slice(1); // remove leading "/"
+    }
+
+    return null;
+  } catch (error) {
+    // Invalid URL
+    return null;
+  }
 }
 
-const Thumbnail = ({ icon, link, title }: ThumbnailProps) => {
-  const videoId = extractYouTubeVideoId(link);
-  const thumbnailUrl = videoId
-    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-    : icon;
 
-  const [imgError, setImgError] = useState(false);
+const Thumbnail = ({ contentType, link, title }: ThumbnailProps) => {
+  const videoId = extractYouTubeVideoId(link);
+  const thumbnailUrl =
+    contentType === 'Youtube' && videoId
+      ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+      : null;
 
   const handleClick = () => {
     window.open(link, '_blank');
   };
 
   return (
-    <div onClick={handleClick} className="cursor-pointer">
-      {!imgError ? (
+    <div onClick={handleClick} className="cursor-pointer w-full h-[150px] rounded-xl flex justify-center items-center bg-gray-100">
+      {thumbnailUrl ? (
         <img
           src={thumbnailUrl}
           alt={title}
-          onError={() => setImgError(true)}
-          className="rounded-xl w-full h-[150px] object-cover"
+          className="w-full h-full object-cover rounded-xl"
         />
-      ) : (
-        <div className="flex items-center justify-center w-full h-[150px] bg-gray-200 rounded-xl">
-          <ImageOff className="w-10 h-10 text-gray-500" />
-        </div>
-      )}
+      ) : contentType === 'PDF' ? (
+        <FileText className="w-10 h-10 text-gray-500" />
+      ) : contentType === 'Twitter' ? (
+        <Twitter className="w-10 h-10 text-blue-500" />
+      ) : contentType === 'Notion' ? (
+        <Book className="w-10 h-10 text-black" />
+      ) : null}
     </div>
   );
 };
