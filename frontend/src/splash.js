@@ -19,14 +19,15 @@ const BrainIcon = createElement(Brain, {
 brainRoot.render(BrainIcon);
 
 // Progress bar logic
+ 
 const splash = document.getElementById('splash-screen');
 const root = document.getElementById('root');
 const bar = document.getElementById('progress-bar');
 const percent = document.getElementById('progress-percent');
 
 let progress = 0;
-const duration = 5000; // total duration in ms
-const intervalTime = 100; // update every 100ms
+const duration = 3000;  
+const intervalTime = 100;  
 const steps = duration / intervalTime;
 const increment = 100 / steps;
 
@@ -39,10 +40,8 @@ const interval = setInterval(() => {
 
   if (progress >= 100) {
     clearInterval(interval);
-    // Wait a short moment so users see 100% filled
-    setTimeout(() => {
-      splash.classList.add('hidden');
-      root.classList.remove('hidden');
-    }, 200); // slight delay just for visual polish
+    // Immediately hide splash and show root after 3s total
+    splash.classList.add('hidden');
+    root.classList.remove('hidden');
   }
 }, intervalTime);
