@@ -25,10 +25,13 @@ const bar = document.getElementById('progress-bar');
 const percent = document.getElementById('progress-percent');
 
 let progress = 0;
-const speed = 15;
+const duration = 5000; // total duration in ms
+const intervalTime = 100; // update every 100ms
+const steps = duration / intervalTime;
+const increment = 100 / steps;
 
 const interval = setInterval(() => {
-  progress += Math.random() * 8 + 4;
+  progress += increment;
   if (progress > 100) progress = 100;
 
   bar.style.width = progress + '%';
@@ -36,9 +39,10 @@ const interval = setInterval(() => {
 
   if (progress >= 100) {
     clearInterval(interval);
+    // Wait a short moment so users see 100% filled
     setTimeout(() => {
       splash.classList.add('hidden');
       root.classList.remove('hidden');
-    }, 500);
+    }, 200); // slight delay just for visual polish
   }
-}, speed);
+}, intervalTime);
