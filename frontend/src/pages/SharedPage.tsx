@@ -19,7 +19,9 @@ const SharedContent = () => {
 
   const fetchSharedContent = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/brain/shared/${shareLink}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/brain/shared/${shareLink}`
+      );
       const data = await res.json();
 
       if (res.ok) {
@@ -39,14 +41,20 @@ const SharedContent = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-white px-6 py-8">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        🧠 Welcome to {username ? `${username}'s` : 'someone’s'} shared brain
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-white px-6 py-10 flex flex-col items-center">
+      <div className="w-full max-w-6xl text-center">
+        <h1 className="text-4xl font-extrabold text-purple-700 mb-2">
+          🧠 Welcome to {username ? `${username}'s` : 'someone’s'} Shared Brain
+        </h1>
+        <p className="text-gray-600 text-lg mb-8">
+          Explore notes, ideas, and resources curated with care.
+        </p>
+        {error && (
+          <p className="text-red-500 font-medium text-center mb-6">{error}</p>
+        )}
+      </div>
 
-      {error && <p className="text-red-500 text-center">{error}</p>}
-
-      <div className="grid grid-cols-[repeat(auto-fit,_minmax(260px,_1fr))] gap-6">
+      <div className="w-full max-w-6xl grid grid-cols-[repeat(auto-fit,_minmax(260px,_1fr))] gap-6">
         {contentList.map((item) => (
           <Card
             key={item._id}
@@ -54,8 +62,8 @@ const SharedContent = () => {
             title={item.title}
             link={item.link}
             tags={item.tags}
-            reload={() => {}}        
-            hideDeleteButton={true} 
+            reload={() => {}}
+            hideDeleteButton={true}
           />
         ))}
       </div>

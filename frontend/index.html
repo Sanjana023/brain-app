@@ -5,10 +5,105 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/src/style.css" rel="stylesheet" />
-    <title>Vite + React + TS</title>
+    <title>Second Brain App</title>
+
+    <style>
+      #splash-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: white;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        transition: opacity 0.4s ease;
+      }
+
+      #splash-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loading-text {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: #7e22ce;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+
+      .progress-wrapper {
+        width: 260px;
+        height: 10px;
+        background-color: #f3e8ff;
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      #progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(to right, #a855f7, #9333ea);
+        border-radius: 999px;
+        transition: width 0.2s ease;
+      }
+
+      #progress-percent {
+        margin-top: 10px;
+        font-weight: 500;
+        color: #6b21a8;
+        text-align: center;
+      }
+    </style>
   </head>
+
   <body>
-    <div id="root"></div>
+    <!-- Splash screen -->
+    <div id="splash-screen">
+      <div class="loading-text">Loading your brain...</div>
+      <div class="progress-wrapper">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="progress-percent">0%</div>
+    </div>
+
+    <!-- Root for React app -->
+    <div id="root" class="hidden"></div>
+
+    <!-- Splash progress -->
+    <script>
+      const splash = document.getElementById('splash-screen');
+      const root = document.getElementById('root');
+      const bar = document.getElementById('progress-bar');
+      const percent = document.getElementById('progress-percent');
+
+      let progress = 0;
+
+      const speed = 12; // milliseconds between steps (faster)
+
+      const interval = setInterval(() => {
+        progress += Math.random() * 12 + 6; // fast jump
+        if (progress > 100) progress = 100;
+
+        bar.style.width = progress + '%';
+        percent.textContent = Math.floor(progress) + '%';
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            splash.classList.add('hidden');
+            root.classList.remove('hidden');
+          }, 300); // slight delay for fade-out
+        }
+      }, speed);
+    </script>
+
+    <!-- React app -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
