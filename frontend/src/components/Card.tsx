@@ -14,6 +14,7 @@ interface CardProps {
   title: string;
   link: string;
   reload: () => void;
+  hideDeleteButton?: boolean;
 }
 
 const getContentType = (
@@ -26,7 +27,14 @@ const getContentType = (
   return 'PDF';
 };
 
-const Card = ({ id, tags, title, link, reload }: CardProps) => {
+const Card = ({
+  id,
+  tags,
+  title,
+  link,
+  reload,
+  hideDeleteButton,
+}: CardProps) => {
   const date = format(new Date(), 'dd/MM/yyyy');
   const contentType = getContentType(link);
 
@@ -58,12 +66,14 @@ const Card = ({ id, tags, title, link, reload }: CardProps) => {
         <h2 className="text-md font-semibold text-gray-800 truncate">
           {title}
         </h2>
-        <button
-          onClick={handleDelete}
-          className="text-gray-400 hover:text-red-400 transition"
-        >
-          <Trash2 size={18} />
-        </button>
+        {!hideDeleteButton && (
+          <button
+            onClick={handleDelete}
+            className="text-gray-400 hover:text-red-400 transition"
+          >
+            <Trash2 size={18} />
+          </button>
+        )}
       </div>
 
       {/* Thumbnail */}

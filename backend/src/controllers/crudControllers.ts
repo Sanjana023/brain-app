@@ -6,6 +6,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import { LinkModel } from '../models/linkModel';
 import { random } from '../utils';
+import user from '../models/user';
 dotenv.config();
 
 async function getOrCreateTags(tagTitles: string[]): Promise<string[]> {
@@ -209,7 +210,7 @@ export const shareContent = async (
       });
 
       const BASE_URL = process.env.BASE_URL;
-      const link = `${BASE_URL}/api/v1/brain/shared/${newLink.hash}`;
+      const link = `${process.env.FRONTEND_BASE_URL}/api/v1/brain/shared/${newLink.hash}`;
 
       return res.status(200).json({
         message: 'Shared link created',
@@ -244,10 +245,15 @@ export const getSharedContent = async (
       .find({ userId: link.userId })
       .populate('tags');
 
+    const User = await user.findById(link.userId).select('username');
+
     if (!content || content.length == 0) {
       return res.status(404).json({ message: 'No content found!' });
     }
-    return res.status(200).json({ content });
+    return res.status(200).json({
+      content,
+      username: User?.username || 'someone',
+    });
   } catch (error) {
     console.error('Error in getSharedContent controller:', error);
     return res.status(500).json({ message: 'Internal server error!' });
